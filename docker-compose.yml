@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  odoo:
+    image: odoo:16.0
+    container_name: odoo16
+    restart: always
+    tty: true
+    ports:
+    - "8069:8069"
+    volumes:
+    - odoo-web-data:/var/lib/odoo
+    - ./config:/etc/odoo
+    - ./addons:/mnt/extra-addons
+    environment:
+    - DB_PORT_5432_TCP_ADDR= your database endpoint
+    - DB_PORT_5432_TCP_PORT=5432
+    - DB_ENV_POSTGRES_USER=odoo # recommend to use this name, with anothers you'd have a troubles
+    - DB_ENV_POSTGRES_PASSWORD= your DB password
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    depends_on:
+    - odoo
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+    - "80:80"
+    - "443:443"
+
+volumes:
+  odoo-web-data:
